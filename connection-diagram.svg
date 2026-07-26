@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" font-family="'Segoe UI', Arial, sans-serif">
+  <!-- Background -->
+  <rect x="0" y="0" width="1100" height="800" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="40" y="42" font-size="24" font-weight="bold" fill="#1a2a3a">ESP32 T-Display RC Car — Connection Diagram</text>
+  <text x="40" y="66" font-size="13" fill="#666">LilyGO T-Display (ESP32) · Radiolink R9DS (SBUS) · MX1508 · Servo · LiPo</text>
+
+  <!-- Legend -->
+  <g font-size="12" fill="#333">
+    <rect x="870" y="28" width="200" height="74" rx="6" fill="#f4f6f8" stroke="#ccc"/>
+    <line x1="884" y1="48" x2="914" y2="48" stroke="#1f78ff" stroke-width="3"/>
+    <text x="922" y="52">Signal (GPIO)</text>
+    <line x1="884" y1="68" x2="914" y2="68" stroke="#e02020" stroke-width="3"/>
+    <text x="922" y="72">5V power</text>
+    <line x1="884" y1="88" x2="914" y2="88" stroke="#222" stroke-width="3"/>
+    <text x="922" y="92">Ground</text>
+  </g>
+
+  <!-- ===================== ESP32 BOARD ===================== -->
+  <g>
+    <rect x="60" y="120" width="190" height="500" rx="10" fill="#dde6f0" stroke="#2b4a6f" stroke-width="2"/>
+    <text x="155" y="142" font-size="14" font-weight="bold" fill="#1a2a3a" text-anchor="middle">LilyGO T-Display</text>
+    <text x="155" y="160" font-size="11" fill="#557" text-anchor="middle">(ESP32)</text>
+    <!-- pin stubs -->
+    <g font-size="12" fill="#1a2a3a">
+      <circle cx="250" cy="175" r="4" fill="#1f78ff"/>
+      <text x="150" y="179" text-anchor="end">GPIO21</text>
+      <circle cx="250" cy="245" r="4" fill="#1f78ff"/>
+      <text x="150" y="249" text-anchor="end">GPIO15</text>
+      <circle cx="250" cy="315" r="4" fill="#1f78ff"/>
+      <text x="150" y="319" text-anchor="end">GPIO12</text>
+      <circle cx="250" cy="370" r="4" fill="#1f78ff"/>
+      <text x="150" y="374" text-anchor="end">GPIO13</text>
+      <circle cx="250" cy="435" r="4" fill="#1f78ff"/>
+      <text x="150" y="439" text-anchor="end">GPIO25</text>
+      <circle cx="250" cy="505" r="4" fill="#1f78ff"/>
+      <text x="150" y="509" text-anchor="end">GPIO35</text>
+      <circle cx="250" cy="560" r="4" fill="#222"/>
+      <text x="150" y="564" text-anchor="end">GND</text>
+      <circle cx="250" cy="610" r="4" fill="#222"/>
+      <text x="150" y="614" text-anchor="end">GND</text>
+    </g>
+  </g>
+
+  <!-- ===================== R9DS RECEIVER ===================== -->
+  <g>
+    <rect x="620" y="110" width="230" height="95" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="635" y="130" font-size="13" font-weight="bold" fill="#222">Radiolink R9DS</text>
+    <text x="635" y="146" font-size="11" fill="#666">Receiver (SBUS mode)</text>
+    <circle cx="620" cy="150" r="4" fill="#1f78ff"/>
+    <text x="632" y="154" font-size="11" fill="#1f78ff">SBUS</text>
+    <circle cx="620" cy="175" r="4" fill="#e02020"/>
+    <text x="632" y="179" font-size="11" fill="#e02020">VCC 5V</text>
+    <circle cx="620" cy="200" r="4" fill="#222"/>
+    <text x="632" y="204" font-size="11" fill="#222">GND</text>
+  </g>
+
+  <!-- ===================== LEVEL SHIFTER ===================== -->
+  <g>
+    <rect x="430" y="130" width="100" height="70" rx="6" fill="#fff7e6" stroke="#c8922a" stroke-width="2"/>
+    <text x="480" y="152" font-size="10" font-weight="bold" fill="#8a5a00" text-anchor="middle">Level Shifter</text>
+    <text x="480" y="166" font-size="9" fill="#8a5a00" text-anchor="middle">5V &#8594; 3.3V</text>
+    <text x="480" y="180" font-size="9" fill="#8a5a00" text-anchor="middle">1k + 2k divider</text>
+    <circle cx="530" cy="165" r="3.5" fill="#1f78ff"/>
+    <circle cx="430" cy="165" r="3.5" fill="#1f78ff"/>
+  </g>
+
+  <!-- ===================== STEERING SERVO ===================== -->
+  <g>
+    <rect x="620" y="235" width="230" height="95" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="635" y="255" font-size="13" font-weight="bold" fill="#222">Steering Servo</text>
+    <circle cx="620" cy="275" r="4" fill="#1f78ff"/>
+    <text x="632" y="279" font-size="11" fill="#1f78ff">SIG</text>
+    <circle cx="620" cy="300" r="4" fill="#e02020"/>
+    <text x="632" y="304" font-size="11" fill="#e02020">VCC 5V</text>
+    <circle cx="620" cy="320" r="4" fill="#222"/>
+    <text x="632" y="324" font-size="11" fill="#222">GND</text>
+  </g>
+
+  <!-- ===================== HEADLIGHT LED ===================== -->
+  <g>
+    <rect x="620" y="360" width="230" height="80" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="635" y="385" font-size="13" font-weight="bold" fill="#222">Headlight LED</text>
+    <text x="635" y="402" font-size="11" fill="#666">via transistor / resistor</text>
+    <circle cx="620" cy="420" r="4" fill="#1f78ff"/>
+    <text x="632" y="424" font-size="11" fill="#1f78ff">SIG</text>
+  </g>
+
+  <!-- ===================== MX1508 DRIVER ===================== -->
+  <g>
+    <rect x="620" y="455" width="230" height="190" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="635" y="475" font-size="13" font-weight="bold" fill="#222">MX1508 Driver</text>
+    <circle cx="620" cy="500" r="4" fill="#1f78ff"/>
+    <text x="632" y="504" font-size="11" fill="#1f78ff">IN1</text>
+    <circle cx="620" cy="545" r="4" fill="#1f78ff"/>
+    <text x="632" y="549" font-size="11" fill="#1f78ff">IN2</text>
+    <circle cx="620" cy="590" r="4" fill="#e02020"/>
+    <text x="632" y="594" font-size="11" fill="#e02020">V+ (batt)</text>
+    <circle cx="620" cy="615" r="4" fill="#222"/>
+    <text x="632" y="619" font-size="11" fill="#222">GND</text>
+    <text x="700" y="660" font-size="10" fill="#666">MOTOR A/B &#8594;</text>
+  </g>
+
+  <!-- ===================== DC MOTOR ===================== -->
+  <g>
+    <rect x="900" y="495" width="170" height="70" rx="8" fill="#eef" stroke="#2b4a6f" stroke-width="2"/>
+    <text x="985" y="525" font-size="12" font-weight="bold" fill="#1a2a3a" text-anchor="middle">DC Drive Motor</text>
+    <text x="985" y="545" font-size="10" fill="#557" text-anchor="middle">spins wheels</text>
+  </g>
+
+  <!-- ===================== BATTERY ===================== -->
+  <g>
+    <rect x="360" y="650" width="250" height="120" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="485" y="678" font-size="13" font-weight="bold" fill="#222" text-anchor="middle">2S LiPo Battery</text>
+    <text x="485" y="696" font-size="11" fill="#666" text-anchor="middle">7.4V nominal / 8.4V full</text>
+    <circle cx="480" cy="650" r="4" fill="#e02020"/>
+    <text x="490" y="654" font-size="11" fill="#e02020">+</text>
+    <circle cx="430" cy="650" r="4" fill="#222"/>
+    <text x="398" y="654" font-size="11" fill="#222">&#8722;</text>
+  </g>
+
+  <!-- ===================== 2S DIVIDER ===================== -->
+  <g>
+    <rect x="250" y="700" width="110" height="56" rx="6" fill="#fff7e6" stroke="#c8922a" stroke-width="2"/>
+    <text x="305" y="720" font-size="10" font-weight="bold" fill="#8a5a00" text-anchor="middle">2S Divider</text>
+    <text x="305" y="734" font-size="9" fill="#8a5a00" text-anchor="middle">200k + 100k</text>
+    <text x="305" y="746" font-size="9" fill="#8a5a00" text-anchor="middle">tap = 1/3</text>
+    <circle cx="360" cy="728" r="3.5" fill="#1f78ff"/>
+    <circle cx="250" cy="728" r="3.5" fill="#e02020"/>
+    <circle cx="250" cy="744" r="3.5" fill="#222"/>
+  </g>
+
+  <!-- ===================== WIRES: SIGNALS (blue) ===================== -->
+  <g stroke="#1f78ff" stroke-width="3" fill="none" stroke-linejoin="round">
+    <!-- SBUS: R9DS -> shifter -> ESP21 -->
+    <path d="M620,150 L560,150 L560,165 L530,165"/>
+    <path d="M430,165 L340,165 L340,175 L250,175"/>
+    <!-- Servo SIG -> ESP15 -->
+    <path d="M620,275 L470,275 L470,245 L250,245"/>
+    <!-- Headlight SIG -> ESP25 -->
+    <path d="M620,420 L500,420 L500,435 L250,435"/>
+    <!-- MX1508 IN1 -> ESP12 -->
+    <path d="M620,500 L380,500 L380,315 L250,315"/> <!-- MX1508 IN1 -> ESP12 -->
+    <!-- MX1508 IN2 -> ESP13 -->
+    <path d="M620,545 L340,545 L340,370 L250,370"/>
+    <!-- 2S divider tap -> ESP35 (battery sense) -->
+    <path d="M360,728 L340,728 L340,505 L250,505"/>
+  </g>
+
+  <!-- ===================== 2S DIVIDER POWER WIRES ===================== -->
+  <g stroke="#e02020" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M480,650 L480,744 L360,744"/> <!-- batt+ -> divider top -->
+  </g>
+  <g stroke="#222" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M430,650 L430,731 L360,731"/> <!-- batt- -> divider bottom -->
+  </g>
+
+  <!-- ===================== WIRES: 5V (red) ===================== -->
+  <g stroke="#e02020" stroke-width="3" fill="none" stroke-linejoin="round">
+    <path d="M490,650 L490,175"/>
+    <path d="M490,175 L620,175"/>
+    <path d="M490,300 L620,300"/>
+    <path d="M490,590 L620,590"/>
+  </g>
+
+  <!-- ===================== WIRES: GND (black) ===================== -->
+  <g stroke="#222" stroke-width="3" fill="none" stroke-linejoin="round">
+    <path d="M440,650 L440,200"/>
+    <path d="M440,200 L620,200"/>
+    <path d="M440,320 L620,320"/>
+    <path d="M440,615 L620,615"/>
+    <path d="M440,610 L250,610"/>
+  </g>
+
+  <!-- ===================== MOTOR WIRE ===================== -->
+  <g stroke="#7a3fb0" stroke-width="3" fill="none">
+    <path d="M850,525 L900,525"/>
+  </g>
+
+  <!-- ===================== WIRE LABELS ===================== -->
+  <g font-size="11" fill="#1f78ff">
+    <text x="350" y="162">SBUS (100k 8E2 inv)</text>
+    <text x="360" y="238">Steering</text>
+    <text x="560" y="410">Headlight</text>
+    <text x="300" y="312">IN1</text>
+    <text x="300" y="367">IN2</text>
+  </g>
+  <g font-size="10" fill="#e02020">
+    <text x="455" y="250" text-anchor="middle">5V from LiPo +</text>
+  </g>
+  <g font-size="11" fill="#222">
+    <text x="455" y="608" text-anchor="middle">Common GND</text>
+  </g>
+  <g font-size="11" fill="#7a3fb0">
+    <text x="858" y="518">MOTOR A/B</text>
+  </g>
+
+  <!-- ===================== NOTES ===================== -->
+  <g font-size="11" fill="#8a5a00">
+    <text x="430" y="220">R9DS outputs 5V logic — ESP32 GPIO is NOT 5V tolerant.</text>
+    <text x="430" y="236">The divider steps it down to ~3.3V before GPIO21.</text>
+  </g>
+  <g font-size="11" fill="#557">
+    <text x="380" y="722">2S pack measured via external 200k/100k divider on GPIO35 (tap = 1/3, so</text>
+    <text x="380" y="738">8.4V full -&gt; 2.8V at pin, safe for 3.3V-max ESP32). Factor ~1.1 corrects ADC.</text>
+    <text x="380" y="754">Do NOT use the T-Display onboard 1S divider (GPIO34/14) for a 2S pack.</text>
+  </g>
+</svg>
