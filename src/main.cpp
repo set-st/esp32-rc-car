@@ -151,19 +151,19 @@ void loop() {
         tft.setTextSize(2);
         if (sbus.isFailsafe()) {
             tft.setTextColor(TFT_RED, TFT_BLACK);
-            tft.setCursor(10, 5);
-            tft.print("FAILSAFE / NO SIG ");
+            tft.setCursor(10, 4);
+            tft.print("FAILSAFE / NO SIG");
         } else {
             tft.setTextColor(TFT_GREEN, TFT_BLACK);
-            tft.setCursor(10, 5);
-            tft.print("RC CAR: ACTIVE   ");
+            tft.setCursor(10, 4);
+            tft.print("RC CAR: ACTIVE");
         }
-        
+
         tft.setTextSize(1);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        
+
         // --- Battery Voltage ---
-        tft.setCursor(10, 30);
+        tft.setCursor(10, 24);
         tft.print("Battery: ");
         // 2S thresholds: red < 6.8V (3.4V/cell), yellow < 7.4V (3.7V/cell)
         if (batteryVoltage < 6.8) {
@@ -174,21 +174,21 @@ void loop() {
             tft.setTextColor(TFT_GREEN, TFT_BLACK);
         }
         tft.print(batteryVoltage, 2);
-        tft.println(" V  ");
+        tft.println(" V");
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        
+
         // --- Servo & Steering Status ---
         uint16_t steerVal = sbus.getChannel(STEERING_CHANNEL);
         int steerAngle = steeringServo.read();
-        tft.setCursor(10, 50);
+        tft.setCursor(10, 36);
         tft.printf("Steer (Ch%d): %-4d -> %-3d deg", STEERING_CHANNEL + 1, steerVal, steerAngle);
-        
+
         // Visual Steer Bar
-        tft.drawRect(10, 62, 220, 10, TFT_DARKGREY);
-        tft.fillRect(11, 63, 218, 8, TFT_BLACK); // Clear bar background
+        tft.drawRect(10, 46, 220, 8, TFT_DARKGREY);
+        tft.fillRect(11, 47, 218, 6, TFT_BLACK); // Clear bar background
         int steerBarPos = map(steerAngle, SERVO_MIN_DEG, SERVO_MAX_DEG, 0, 210);
-        tft.fillRect(11 + steerBarPos, 63, 8, 8, TFT_BLUE);
-        
+        tft.fillRect(11 + steerBarPos, 47, 8, 6, TFT_BLUE);
+
         // --- Motor & Throttle Status ---
         uint16_t throttleVal = sbus.getChannel(THROTTLE_CHANNEL);
         // Calculate the current active speed target
@@ -198,27 +198,47 @@ void loop() {
         } else if (throttleVal < (SBUS_MID - DEADBAND)) {
             activeSpeed = map(throttleVal, SBUS_MIN, SBUS_MID - DEADBAND, -100, 0); // -100% to 0%
         }
-        tft.setCursor(10, 85);
-        tft.printf("Throt (Ch%d): %-4d -> %-3d%%    ", THROTTLE_CHANNEL + 1, throttleVal, activeSpeed);
-        
+        tft.setCursor(10, 60);
+        tft.printf("Throt (Ch%d): %-4d -> %-3d%%", THROTTLE_CHANNEL + 1, throttleVal, activeSpeed);
+
         // Visual Throttle Bar (Bi-directional, zero in the middle)
-        tft.drawRect(10, 97, 220, 10, TFT_DARKGREY);
-        tft.fillRect(11, 98, 218, 8, TFT_BLACK); // Clear bar background
+        tft.drawRect(10, 70, 220, 8, TFT_DARKGREY);
+        tft.fillRect(11, 71, 218, 6, TFT_BLACK); // Clear bar background
         int midPointX = 120;
-        tft.drawFastVLine(midPointX, 98, 8, TFT_WHITE); // Center mark
-        
+        tft.drawFastVLine(midPointX, 71, 6, TFT_WHITE); // Center mark
+
         if (activeSpeed > 0) {
             int barWidth = map(activeSpeed, 0, 100, 0, 100);
-            tft.fillRect(midPointX, 98, barWidth, 8, TFT_GREEN);
+            tft.fillRect(midPointX, 71, barWidth, 6, TFT_GREEN);
         } else if (activeSpeed < 0) {
             int barWidth = map(-activeSpeed, 0, 100, 0, 100);
-            tft.fillRect(midPointX - barWidth, 98, barWidth, 8, TFT_RED);
+            tft.fillRect(midPointX - barWidth, 71, barWidth, 6, TFT_RED);
         }
-        
+
+        // --- Motor Status (direction + live control-pin debug) ---
+        int motorSpeed = motor.getSpeed();            // -255..255
+        const char* dir = motor.getDirection();       // FWD / REV / BRAKE / STOP
+        int motorPct = (motorSpeed * 100) / 255;      // signed percent
+
+        // Color-coded direction label
+        tft.setCursor(10, 84);
+        if (strcmp(dir, "FWD") == 0)        tft.setTextColor(TFT_GREEN, TFT_BLACK);
+        else if (strcmp(dir, "REV") == 0)   tft.setTextColor(TFT_RED, TFT_BLACK);
+        else if (strcmp(dir, "BRAKE") == 0) tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+        else                                tft.setTextColor(TFT_WHITE, TFT_BLACK);
+        tft.printf("Motor: %-5s %-4d%%", dir, motorPct);
+        tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+        // Live GPIO levels of the TB6612FNG control pins (0/1)
+        tft.setCursor(10, 96);
+        tft.printf("AIN1:%d AIN2:%d PWM:%d STBY:%d",
+                   motor.getPinAIN1(), motor.getPinAIN2(),
+                   motor.getPinPWMA(), motor.getPinSTBY());
+
         // --- Debug Info (Receiver Frame Count) ---
-        tft.setCursor(10, 115);
+        tft.setCursor(10, 112);
         tft.printf("Frame Loss: %-3s", sbus.isFrameLost() ? "YES" : "NO ");
-        tft.setCursor(130, 115);
-        tft.printf("Up Time: %-6lu s", millis() / 1000);
+        tft.setCursor(130, 112);
+        tft.printf("Up: %-6lu s", millis() / 1000);
     }
 }
