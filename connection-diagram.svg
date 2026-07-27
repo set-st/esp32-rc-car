@@ -4,17 +4,19 @@
 
   <!-- Title -->
   <text x="40" y="42" font-size="24" font-weight="bold" fill="#1a2a3a">ESP32 T-Display RC Car — Connection Diagram</text>
-  <text x="40" y="66" font-size="13" fill="#666">LilyGO T-Display (ESP32) · Radiolink R9DS (SBUS) · MX1508 · Servo · LiPo</text>
+  <text x="40" y="66" font-size="13" fill="#666">LilyGO T-Display (ESP32) · Radiolink R9DS (SBUS) · TB6612FNG · Servo · 2S LiPo</text>
 
   <!-- Legend -->
   <g font-size="12" fill="#333">
-    <rect x="870" y="28" width="200" height="74" rx="6" fill="#f4f6f8" stroke="#ccc"/>
-    <line x1="884" y1="48" x2="914" y2="48" stroke="#1f78ff" stroke-width="3"/>
-    <text x="922" y="52">Signal (GPIO)</text>
-    <line x1="884" y1="68" x2="914" y2="68" stroke="#e02020" stroke-width="3"/>
-    <text x="922" y="72">5V power</text>
-    <line x1="884" y1="88" x2="914" y2="88" stroke="#222" stroke-width="3"/>
-    <text x="922" y="92">Ground</text>
+    <rect x="850" y="28" width="220" height="92" rx="6" fill="#f4f6f8" stroke="#ccc"/>
+    <line x1="864" y1="48" x2="894" y2="48" stroke="#1f78ff" stroke-width="3"/>
+    <text x="902" y="52">Signal (GPIO)</text>
+    <line x1="864" y1="68" x2="894" y2="68" stroke="#e02020" stroke-width="3"/>
+    <text x="902" y="72">Power (battery / 5V)</text>
+    <line x1="864" y1="88" x2="894" y2="88" stroke="#222" stroke-width="3"/>
+    <text x="902" y="92">Ground</text>
+    <line x1="864" y1="108" x2="894" y2="108" stroke="#1f78ff" stroke-width="6"/>
+    <text x="902" y="112">3.3V logic (thick)</text>
   </g>
 
   <!-- ===================== ESP32 BOARD ===================== -->
@@ -34,12 +36,16 @@
       <text x="150" y="374" text-anchor="end">GPIO13</text>
       <circle cx="250" cy="435" r="4" fill="#1f78ff"/>
       <text x="150" y="439" text-anchor="end">GPIO25</text>
+      <circle cx="250" cy="470" r="4" fill="#1f78ff"/>
+      <text x="150" y="474" text-anchor="end">GPIO26</text>
       <circle cx="250" cy="505" r="4" fill="#1f78ff"/>
-      <text x="150" y="509" text-anchor="end">GPIO35</text>
-      <circle cx="250" cy="560" r="4" fill="#222"/>
-      <text x="150" y="564" text-anchor="end">GND</text>
+      <text x="150" y="509" text-anchor="end">GPIO27</text>
+      <circle cx="250" cy="560" r="4" fill="#1f78ff"/>
+      <text x="150" y="564" text-anchor="end">GPIO35</text>
       <circle cx="250" cy="610" r="4" fill="#222"/>
       <text x="150" y="614" text-anchor="end">GND</text>
+      <circle cx="250" cy="660" r="4" fill="#222"/>
+      <text x="150" y="664" text-anchor="end">GND</text>
     </g>
   </g>
 
@@ -87,19 +93,25 @@
     <text x="632" y="424" font-size="11" fill="#1f78ff">SIG</text>
   </g>
 
-  <!-- ===================== MX1508 DRIVER ===================== -->
+  <!-- ===================== TB6612FNG DRIVER ===================== -->
   <g>
-    <rect x="620" y="455" width="230" height="190" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
-    <text x="635" y="475" font-size="13" font-weight="bold" fill="#222">MX1508 Driver</text>
-    <circle cx="620" cy="500" r="4" fill="#1f78ff"/>
-    <text x="632" y="504" font-size="11" fill="#1f78ff">IN1</text>
-    <circle cx="620" cy="545" r="4" fill="#1f78ff"/>
-    <text x="632" y="549" font-size="11" fill="#1f78ff">IN2</text>
-    <circle cx="620" cy="590" r="4" fill="#e02020"/>
-    <text x="632" y="594" font-size="11" fill="#e02020">V+ (batt)</text>
-    <circle cx="620" cy="615" r="4" fill="#222"/>
-    <text x="632" y="619" font-size="11" fill="#222">GND</text>
-    <text x="700" y="660" font-size="10" fill="#666">MOTOR A/B &#8594;</text>
+    <rect x="620" y="445" width="230" height="220" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
+    <text x="635" y="465" font-size="13" font-weight="bold" fill="#222">TB6612FNG Driver</text>
+    <circle cx="620" cy="490" r="4" fill="#1f78ff"/>
+    <text x="632" y="494" font-size="11" fill="#1f78ff">AIN1 (GPIO12)</text>
+    <circle cx="620" cy="515" r="4" fill="#1f78ff"/>
+    <text x="632" y="519" font-size="11" fill="#1f78ff">AIN2 (GPIO13)</text>
+    <circle cx="620" cy="540" r="4" fill="#1f78ff"/>
+    <text x="632" y="544" font-size="11" fill="#1f78ff">PWMA (GPIO26)</text>
+    <circle cx="620" cy="565" r="4" fill="#1f78ff"/>
+    <text x="632" y="569" font-size="11" fill="#1f78ff">STBY (GPIO27)</text>
+    <circle cx="620" cy="595" r="4" fill="#e02020"/>
+    <text x="632" y="599" font-size="11" fill="#e02020">VM (batt +)</text>
+    <circle cx="620" cy="620" r="4" fill="#1f78ff"/>
+    <text x="632" y="624" font-size="11" fill="#1f78ff">VCC (3.3V)</text>
+    <circle cx="620" cy="642" r="4" fill="#222"/>
+    <text x="632" y="646" font-size="11" fill="#222">GND</text>
+    <text x="700" y="680" font-size="10" fill="#666">AOUT1/AOUT2 &#8594; motor</text>
   </g>
 
   <!-- ===================== DC MOTOR ===================== -->
@@ -113,7 +125,7 @@
   <g>
     <rect x="360" y="650" width="250" height="120" rx="8" fill="#fff" stroke="#444" stroke-width="2"/>
     <text x="485" y="678" font-size="13" font-weight="bold" fill="#222" text-anchor="middle">2S LiPo Battery</text>
-    <text x="485" y="696" font-size="11" fill="#666" text-anchor="middle">7.4V nominal / 8.4V full</text>
+    <text x="485" y="696" font-size="11" fill="#666" text-anchor="middle">2 cells: 7.4V nominal / 8.4V full</text>
     <circle cx="480" cy="650" r="4" fill="#e02020"/>
     <text x="490" y="654" font-size="11" fill="#e02020">+</text>
     <circle cx="430" cy="650" r="4" fill="#222"/>
@@ -140,12 +152,16 @@
     <path d="M620,275 L470,275 L470,245 L250,245"/>
     <!-- Headlight SIG -> ESP25 -->
     <path d="M620,420 L500,420 L500,435 L250,435"/>
-    <!-- MX1508 IN1 -> ESP12 -->
-    <path d="M620,500 L380,500 L380,315 L250,315"/> <!-- MX1508 IN1 -> ESP12 -->
-    <!-- MX1508 IN2 -> ESP13 -->
-    <path d="M620,545 L340,545 L340,370 L250,370"/>
+    <!-- TB6612FNG AIN1 -> ESP12 -->
+    <path d="M620,490 L380,490 L380,315 L250,315"/>
+    <!-- TB6612FNG AIN2 -> ESP13 -->
+    <path d="M620,515 L340,515 L340,370 L250,370"/>
+    <!-- TB6612FNG PWMA -> ESP26 -->
+    <path d="M620,540 L300,540 L300,470 L250,470"/>
+    <!-- TB6612FNG STBY -> ESP27 -->
+    <path d="M620,565 L320,565 L320,505 L250,505"/>
     <!-- 2S divider tap -> ESP35 (battery sense) -->
-    <path d="M360,728 L340,728 L340,505 L250,505"/>
+    <path d="M360,728 L340,728 L340,560 L250,560"/>
   </g>
 
   <!-- ===================== 2S DIVIDER POWER WIRES ===================== -->
@@ -161,7 +177,18 @@
     <path d="M490,650 L490,175"/>
     <path d="M490,175 L620,175"/>
     <path d="M490,300 L620,300"/>
-    <path d="M490,590 L620,590"/>
+  </g>
+
+  <!-- ===================== VM (battery direct, red) ===================== -->
+  <g stroke="#e02020" stroke-width="3" fill="none" stroke-linejoin="round">
+    <!-- 2S battery + -> TB6612FNG VM (bypass the 5V buck) -->
+    <path d="M480,650 L480,595 L620,595"/>
+  </g>
+
+  <!-- ===================== VCC 3.3V (blue, thick) ===================== -->
+  <g stroke="#1f78ff" stroke-width="6" fill="none" stroke-linejoin="round">
+    <!-- ESP32 3.3V regulator -> TB6612FNG VCC -->
+    <path d="M60,560 L60,725 L615,725 L615,620"/>
   </g>
 
   <!-- ===================== WIRES: GND (black) ===================== -->
@@ -170,6 +197,7 @@
     <path d="M440,200 L620,200"/>
     <path d="M440,320 L620,320"/>
     <path d="M440,615 L620,615"/>
+    <path d="M440,642 L620,642"/>
     <path d="M440,610 L250,610"/>
   </g>
 

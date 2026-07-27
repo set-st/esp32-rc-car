@@ -7,8 +7,10 @@
 // ================= Pin Configuration =================
 #define SBUS_RX_PIN    21  // Connect Radiolink R9DS SBUS output here
 #define SERVO_PIN      15  // Connect Steering Servo signal here
-#define MOTOR_IN1      12  // MX1508 IN1 (PWM capable)
-#define MOTOR_IN2      13  // MX1508 IN2 (PWM capable)
+#define MOTOR_AIN1     12  // TB6612FNG AIN1 (direction)
+#define MOTOR_AIN2     13  // TB6612FNG AIN2 (direction)
+#define MOTOR_PWMA     26  // TB6612FNG PWMA (speed, PWM) — must be a PWM-capable pin
+#define MOTOR_STBY     27  // TB6612FNG STBY (standby; HIGH = enabled)
 #define HEADLIGHT_PIN  25  // Connect headlight LED (via transistor/resistor) here
 
 // --- 2S battery monitoring (external divider on GPIO35) ---
@@ -44,7 +46,7 @@
 TFT_eSPI tft = TFT_eSPI();
 Servo steeringServo;
 SBUS sbus;
-MX1508Motor motor(MOTOR_IN1, MOTOR_IN2);
+TB6612Motor motor(MOTOR_AIN1, MOTOR_AIN2, MOTOR_PWMA, MOTOR_STBY);
 
 // ================= Global Variables =================
 uint32_t lastDisplayUpdate = 0;
