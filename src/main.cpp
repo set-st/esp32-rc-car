@@ -260,7 +260,7 @@ void loop() {
         else if (strcmp(dir, "REV") == 0)   tft.setTextColor(TFT_RED, TFT_BLACK);
         else if (strcmp(dir, "BRAKE") == 0) tft.setTextColor(TFT_YELLOW, TFT_BLACK);
         else                                tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        tft.printf("Motor: %-5s %-4d%% G:%s", dir, motorPct, gearLabel[currentGear]);
+        tft.printf("Motor: %-5s %-4d%% G:%s(Ch%d)", dir, motorPct, gearLabel[currentGear], GEAR_CHANNEL + 1);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
         // Live GPIO levels + real PWM duty of the TB6612FNG control pins.
