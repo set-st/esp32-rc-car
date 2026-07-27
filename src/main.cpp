@@ -183,36 +183,39 @@ void loop() {
         tft.setCursor(10, 36);
         tft.printf("Steer (Ch%d): %-4d -> %-3d deg", STEERING_CHANNEL + 1, steerVal, steerAngle);
 
-        // Visual Steer Bar
-        tft.drawRect(10, 46, 220, 8, TFT_DARKGREY);
-        tft.fillRect(11, 47, 218, 6, TFT_BLACK); // Clear bar background
-        int steerBarPos = map(steerAngle, SERVO_MIN_DEG, SERVO_MAX_DEG, 0, 210);
-        tft.fillRect(11 + steerBarPos, 47, 8, 6, TFT_BLUE);
+        // Visual Steer Bar (filled left->right, proportional to angle)
+        tft.fillRect(10, 46, 220, 8, TFT_BLACK);                 // clear whole bar row
+        tft.drawRect(10, 46, 220, 8, TFT_DARKGREY);             // border
+        int steerFrac = map(steerAngle, SERVO_MIN_DEG, SERVO_MAX_DEG, 0, 218);
+        steerFrac = constrain(steerFrac, 0, 218);
+        tft.fillRect(11, 47, steerFrac, 6, TFT_BLUE);           // filled portion
 
         // --- Motor & Throttle Status ---
         uint16_t throttleVal = sbus.getChannel(THROTTLE_CHANNEL);
-        // Calculate the current active speed target
+        // Active speed target. In FAILSAFE the motor is force-stopped, so show 0%.
         int activeSpeed = 0;
-        if (throttleVal > (SBUS_MID + DEADBAND)) {
-            activeSpeed = map(throttleVal, SBUS_MID + DEADBAND, SBUS_MAX, 0, 100); // 0-100%
-        } else if (throttleVal < (SBUS_MID - DEADBAND)) {
-            activeSpeed = map(throttleVal, SBUS_MIN, SBUS_MID - DEADBAND, -100, 0); // -100% to 0%
+        if (!sbus.isFailsafe()) {
+            if (throttleVal > (SBUS_MID + DEADBAND)) {
+                activeSpeed = map(throttleVal, SBUS_MID + DEADBAND, SBUS_MAX, 0, 100);   // 0-100%
+            } else if (throttleVal < (SBUS_MID - DEADBAND)) {
+                activeSpeed = map(throttleVal, SBUS_MIN, SBUS_MID - DEADBAND, -100, 0);  // -100% to 0%
+            }
         }
+        activeSpeed = constrain(activeSpeed, -100, 100);
         tft.setCursor(10, 60);
-        tft.printf("Throt (Ch%d): %-4d -> %-3d%%", THROTTLE_CHANNEL + 1, throttleVal, activeSpeed);
+        tft.printf("Throt (Ch%d): %-4d -> %-4d%%", THROTTLE_CHANNEL + 1, throttleVal, activeSpeed);
 
-        // Visual Throttle Bar (Bi-directional, zero in the middle)
-        tft.drawRect(10, 70, 220, 8, TFT_DARKGREY);
-        tft.fillRect(11, 71, 218, 6, TFT_BLACK); // Clear bar background
-        int midPointX = 120;
-        tft.drawFastVLine(midPointX, 71, 6, TFT_WHITE); // Center mark
-
+        // Visual Throttle Bar (filled from center, green fwd / red rev)
+        tft.fillRect(10, 70, 220, 8, TFT_BLACK);                 // clear whole bar row
+        tft.drawRect(10, 70, 220, 8, TFT_DARKGREY);             // border
+        int midX = 120;
+        tft.drawFastVLine(midX, 71, 6, TFT_WHITE);               // center mark
+        int tFrac = map(abs(activeSpeed), 0, 100, 0, 100);       // px each side (half-width 110)
+        tFrac = constrain(tFrac, 0, 100);
         if (activeSpeed > 0) {
-            int barWidth = map(activeSpeed, 0, 100, 0, 100);
-            tft.fillRect(midPointX, 71, barWidth, 6, TFT_GREEN);
+            tft.fillRect(midX, 71, tFrac, 6, TFT_GREEN);
         } else if (activeSpeed < 0) {
-            int barWidth = map(-activeSpeed, 0, 100, 0, 100);
-            tft.fillRect(midPointX - barWidth, 71, barWidth, 6, TFT_RED);
+            tft.fillRect(midX - tFrac, 71, tFrac, 6, TFT_RED);
         }
 
         // --- Motor Status (direction + live control-pin debug) ---
