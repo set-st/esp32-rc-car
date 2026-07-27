@@ -27,9 +27,22 @@
 // Channel 1 (index 0) usually controls Steering (Roll/Aileron on transmitter)
 // Channel 3 (index 2) usually controls Throttle (Pitch/Throttle on transmitter)
 // Channel 5 (index 4) usually controls Switch A (Toggles headlights)
+// Channel 4 (index 3) — 3-position switch used as a "gear" limiter
 #define STEERING_CHANNEL  0
 #define THROTTLE_CHANNEL  1
+#define GEAR_CHANNEL      3
 #define HEADLIGHT_CHANNEL 4
+
+// Gear (max PWM duty) presets. Effective motor V ~= packV * duty/255.
+// Toy motor is rated ~3xAA (4.5V). On a 2S pack (~8.4V full):
+//   LOW   -> ~3.6V (gentle, protects the toy motor)
+//   NORMAL-> ~4.9V (matches the original 3xAA drive)
+//   SPORT -> ~6.6V (lively but still under the toy's ~6V ceiling)
+#define GEAR_LOW_DUTY    110   // ~3.6V @ 8.4V pack
+#define GEAR_NORMAL_DUTY 150   // ~4.9V @ 8.4V pack
+#define GEAR_SPORT_DUTY  200   // ~6.6V @ 8.4V pack
+// Hysteresis band (SBUS units) so a switch near center doesn't chatter
+#define GEAR_HYST        80
 
 // Servo steering limits (to prevent hardware/linkage binding)
 #define SERVO_MIN_DEG 45
@@ -51,6 +64,10 @@ TB6612Motor motor(MOTOR_AIN1, MOTOR_AIN2, MOTOR_PWMA, MOTOR_STBY);
 // ================= Global Variables =================
 uint32_t lastDisplayUpdate = 0;
 float batteryVoltage = 0.0;
+
+// Gear state (0=LOW, 1=NORMAL, 2=SPORT). Driven by GEAR_CHANNEL.
+int currentGear = 1;
+const char* gearLabel[3] = { "LOW", "NRM", "SPT" };
 
 // Read the 2S pack voltage via the external 200k/100k divider on GPIO35.
 float readBatteryVoltage() {
@@ -136,6 +153,20 @@ void loop() {
             motorSpeed = map(rawThrottle, SBUS_MIN, SBUS_MID - DEADBAND, -255, 0);
         } else {
             motorSpeed = 0;
+        }
+        
+        // --- GEAR SELECT (3-position switch -> PWM duty limiter) ---
+        // Hysteresis around the midpoints prevents chatter when the switch
+        // sits near center. Thresholds derived from SBUS_MID +/- GEAR_HYST.
+        uint16_t rawGear = sbus.getChannel(GEAR_CHANNEL);
+        rawGear = constrain(rawGear, SBUS_MIN, SBUS_MAX);
+        int gMid = (int)SBUS_MID;
+        if (rawGear < gMid - GEAR_HYST) {
+            if (currentGear != 0) { currentGear = 0; motor.setMaxDuty(GEAR_LOW_DUTY); }
+        } else if (rawGear > gMid + GEAR_HYST) {
+            if (currentGear != 2) { currentGear = 2; motor.setMaxDuty(GEAR_SPORT_DUTY); }
+        } else {
+            if (currentGear != 1) { currentGear = 1; motor.setMaxDuty(GEAR_NORMAL_DUTY); }
         }
         
         motor.setSpeed(motorSpeed);
@@ -229,7 +260,7 @@ void loop() {
         else if (strcmp(dir, "REV") == 0)   tft.setTextColor(TFT_RED, TFT_BLACK);
         else if (strcmp(dir, "BRAKE") == 0) tft.setTextColor(TFT_YELLOW, TFT_BLACK);
         else                                tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        tft.printf("Motor: %-5s %-4d%%", dir, motorPct);
+        tft.printf("Motor: %-5s %-4d%% G:%s", dir, motorPct, gearLabel[currentGear]);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
         // Live GPIO levels + real PWM duty of the TB6612FNG control pins.

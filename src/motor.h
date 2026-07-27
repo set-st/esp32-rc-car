@@ -24,7 +24,7 @@ class TB6612Motor {
 public:
     TB6612Motor(int pinAIN1, int pinAIN2, int pinPWMA, int pinSTBY)
         : _ain1(pinAIN1), _ain2(pinAIN2), _pwma(pinPWMA), _stby(pinSTBY),
-          _lastSpeed(0), _pwm(0) {}
+          _lastSpeed(0), _pwm(0), _maxDuty(255) {}
 
     void begin() {
         pinMode(_ain1, OUTPUT);
@@ -45,11 +45,11 @@ public:
         if (speed > 15) {            // Forward
             digitalWrite(_ain1, HIGH);
             digitalWrite(_ain2, LOW);
-            lastAnalogWrite(speed);
+            lastAnalogWrite((speed * _maxDuty) / 255);
         } else if (speed < -15) {    // Reverse
             digitalWrite(_ain1, LOW);
             digitalWrite(_ain2, HIGH);
-            lastAnalogWrite(-speed);
+            lastAnalogWrite((-speed * _maxDuty) / 255);
         } else {
             stop();
         }
@@ -75,6 +75,16 @@ public:
     void standby(bool on) {
         digitalWrite(_stby, on ? LOW : HIGH);
     }
+
+    // Set the maximum PWM duty (0..255) the driver will ever output.
+    // Used as a "gear" limiter: effective motor voltage ~= VM * maxDuty/255.
+    // E.g. on a 2S (8.4V) pack, maxDuty=150 -> ~4.9V, like the toy's 3xAA.
+    void setMaxDuty(int duty) {
+        if (duty < 0) duty = 0;
+        if (duty > 255) duty = 255;
+        _maxDuty = duty;
+    }
+    int getMaxDuty() const { return _maxDuty; }
 
     // ---- Telemetry accessors (for on-screen debug) ----
     // Last commanded speed, -255..255 (0 = stopped/coast/brake).
@@ -114,6 +124,7 @@ private:
     int _stby;
     int _lastSpeed;
     int _pwm;
+    int _maxDuty;
 };
 
 #endif
