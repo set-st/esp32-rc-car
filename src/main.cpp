@@ -26,12 +26,12 @@
 // SBUS channel indices (0-based)
 // Channel 1 (index 0) usually controls Steering (Roll/Aileron on transmitter)
 // Channel 3 (index 2) usually controls Throttle (Pitch/Throttle on transmitter)
-// Channel 5 (index 4) usually controls Switch A (Toggles headlights)
-// Channel 4 (index 3) — 3-position switch used as a "gear" limiter
+// Channel 5 (index 4) — 3-position switch used as a "gear" limiter
+// Channel 4 (index 3) — left stick horizontal (NOT used; do not bind to gear)
 #define STEERING_CHANNEL  0
 #define THROTTLE_CHANNEL  1
-#define GEAR_CHANNEL      3
-#define HEADLIGHT_CHANNEL 4
+#define GEAR_CHANNEL      4
+#define HEADLIGHT_CHANNEL 8   // Ch9 — 2-position switch (headlight toggle)
 
 // Gear (max PWM duty) presets. Effective motor V ~= packV * duty/255.
 // Toy motor is rated ~3xAA (4.5V). On a 2S pack (~8.4V full):
@@ -112,6 +112,10 @@ void setup() {
     
     // Initialize DC Motor driver
     motor.begin();
+
+    // Headlight control pin (toggled by 2-position switch on HEADLIGHT_CHANNEL)
+    pinMode(HEADLIGHT_PIN, OUTPUT);
+    digitalWrite(HEADLIGHT_PIN, LOW);
     
     // Initialize SBUS receiver connection on Serial2
     sbus.begin(SBUS_RX_PIN);
@@ -168,6 +172,11 @@ void loop() {
         } else {
             if (currentGear != 1) { currentGear = 1; motor.setMaxDuty(GEAR_NORMAL_DUTY); }
         }
+        
+        // --- HEADLIGHT (2-position switch on HEADLIGHT_CHANNEL) ---
+        uint16_t rawLight = sbus.getChannel(HEADLIGHT_CHANNEL);
+        rawLight = constrain(rawLight, SBUS_MIN, SBUS_MAX);
+        digitalWrite(HEADLIGHT_PIN, (rawLight > SBUS_MID) ? HIGH : LOW);
         
         motor.setSpeed(motorSpeed);
     }
@@ -274,6 +283,6 @@ void loop() {
         tft.setCursor(10, 112);
         tft.printf("Frame Loss: %-3s", sbus.isFrameLost() ? "YES" : "NO ");
         tft.setCursor(130, 112);
-        tft.printf("Up: %-6lu s", millis() / 1000);
+        tft.printf("L:%s Up:%lus", digitalRead(HEADLIGHT_PIN) ? "ON" : "OFF", millis() / 1000);
     }
 }

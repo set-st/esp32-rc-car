@@ -7,7 +7,7 @@ It reuses the hardware base of a toy RC car (small 130-size motor originally dri
 It features:
 - **1-Wire SBUS telemetry**: Zero-delay control of up to 16 channels with built-in signal-loss **failsafe** protection (stops the car if connection is lost).
 - **Proportional DC Motor drive** via TB6612FNG (sign-magnitude: AIN1/AIN2 direction, PWMA speed). A software **gear limiter** caps the max PWM duty so the toy motor runs near its original 3×AA voltage.
-- **3-position "gear" switch** (SBUS channel 4) → LOW / NORMAL / SPORT duty presets.
+- **3-position "gear" switch** (SBUS channel 5) → LOW / NORMAL / SPORT duty presets.
 - **Proportional Servo steering**: Safe angle constraints to prevent mechanical binding of steering linkages.
 - **On-screen color dashboard**: active throttle (bidirectional bar), steering angle, **motor direction + live TB6612FNG pin states (AIN1/AIN2/DUTY/STBY)**, gear, battery voltage, receiver frame-loss, failsafe state, and uptime.
 - **Real-time 2S battery monitoring**: external 200k/100k divider on GPIO35 (safe — never exceeds 3.3V on the pin), with ADC calibration.
@@ -96,9 +96,14 @@ SBUS channel assignments (0-based indices) live in `src/main.cpp`:
 ```cpp
 #define STEERING_CHANNEL  0   // Ch1 — steering
 #define THROTTLE_CHANNEL  1   // Ch2 — throttle
-#define GEAR_CHANNEL      3   // Ch4 — 3-position switch (gear limiter)
-#define HEADLIGHT_CHANNEL 4   // Ch5 — headlight toggle
+#define GEAR_CHANNEL      4   // Ch5 — 3-position switch (gear limiter)
+#define HEADLIGHT_CHANNEL 8   // Ch9 — 2-position switch (headlight toggle)
 ```
+
+> **Note:** Channel 4 (index 3) is the left stick horizontal axis on the
+> transmitter — it is intentionally **not** bound to anything in this firmware,
+> so the gear limiter uses **Channel 5 (index 4)** instead. The headlight is on
+> **Channel 9 (index 8)**, driven by a 2-position switch.
 
 The toy motor is rated ~3×AA (4.5V). On a 2S pack (~8.4V full) that over-volts it, so a **software gear limiter** caps the max PWM duty (effective motor V ≈ packV × duty/255):
 
@@ -171,9 +176,9 @@ Updated every 200 ms. In landscape (240×135):
 | *(blue bar)* | Steering position, left→right |
 | `Throt (Ch2): <val> -> <pct>%` | Throttle channel + commanded % |
 | *(green/red bar)* | Throttle: green forward, red reverse, from center |
-| `Motor: <DIR> <pct>% G:<gear>` | Direction (FWD/REV/BRAKE/STOP), motor %, gear |
+| `Motor: <DIR> <pct>% G:<gear>(Ch5)` | Direction (FWD/REV/BRAKE/STOP), motor %, gear (Ch5 = 3-pos switch) |
 | `AIN1:x AIN2:x DUTY:xxx STBY:x` | Live TB6612FNG control pins. `DUTY` is the real analogWrite value (0–255), not the pin logic level |
-| `Frame Loss: YES/NO  Up: <s> s` | Receiver frame-loss + uptime |
+| `L:ON/OFF Up:<s>s` | Headlight state (Ch9 switch) + uptime |
 
 ---
 
