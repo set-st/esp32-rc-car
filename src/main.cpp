@@ -232,11 +232,12 @@ void loop() {
         tft.printf("Motor: %-5s %-4d%%", dir, motorPct);
         tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
-        // Live GPIO levels of the TB6612FNG control pins (0/1)
+        // Live GPIO levels + real PWM duty of the TB6612FNG control pins.
+        // DUTY is the actual analogWrite value (0..255), not the pin logic level.
         tft.setCursor(10, 96);
-        tft.printf("AIN1:%d AIN2:%d PWM:%d STBY:%d",
+        tft.printf("AIN1:%d AIN2:%d DUTY:%03d STBY:%d",
                    motor.getPinAIN1(), motor.getPinAIN2(),
-                   motor.getPinPWMA(), motor.getPinSTBY());
+                   motor.getPwmDuty(), motor.getPinSTBY());
 
         // --- Debug Info (Receiver Frame Count) ---
         tft.setCursor(10, 112);

@@ -23,7 +23,8 @@
 class TB6612Motor {
 public:
     TB6612Motor(int pinAIN1, int pinAIN2, int pinPWMA, int pinSTBY)
-        : _ain1(pinAIN1), _ain2(pinAIN2), _pwma(pinPWMA), _stby(pinSTBY), _lastSpeed(0) {}
+        : _ain1(pinAIN1), _ain2(pinAIN2), _pwma(pinPWMA), _stby(pinSTBY),
+          _lastSpeed(0), _pwm(0) {}
 
     void begin() {
         pinMode(_ain1, OUTPUT);
@@ -44,11 +45,11 @@ public:
         if (speed > 15) {            // Forward
             digitalWrite(_ain1, HIGH);
             digitalWrite(_ain2, LOW);
-            analogWrite(_pwma, speed);
+            lastAnalogWrite(speed);
         } else if (speed < -15) {    // Reverse
             digitalWrite(_ain1, LOW);
             digitalWrite(_ain2, HIGH);
-            analogWrite(_pwma, -speed);
+            lastAnalogWrite(-speed);
         } else {
             stop();
         }
@@ -58,7 +59,7 @@ public:
     void stop() {
         digitalWrite(_ain1, LOW);
         digitalWrite(_ain2, LOW);
-        analogWrite(_pwma, 0);
+        lastAnalogWrite(0);
         _lastSpeed = 0;
     }
 
@@ -66,7 +67,7 @@ public:
     void brake() {
         digitalWrite(_ain1, HIGH);
         digitalWrite(_ain2, HIGH);
-        analogWrite(_pwma, 255);
+        lastAnalogWrite(255);
         _lastSpeed = 0;
     }
 
@@ -78,6 +79,11 @@ public:
     // ---- Telemetry accessors (for on-screen debug) ----
     // Last commanded speed, -255..255 (0 = stopped/coast/brake).
     int getSpeed() const { return _lastSpeed; }
+
+    // Last commanded PWM duty actually written to PWMA, 0..255.
+    // This is the real duty cycle; reading the PWM pin with digitalRead
+    // would only return the logic level (0/1), not the duty.
+    int getPwmDuty() const { return _pwm; }
 
     // Human-readable direction based on the live pin states.
     const char* getDirection() const {
@@ -96,11 +102,18 @@ public:
     int getPinSTBY()  const { return digitalRead(_stby); }
 
 private:
+    // analogWrite wrapper that also records the last duty for telemetry.
+    void lastAnalogWrite(int duty) {
+        _pwm = duty;
+        analogWrite(_pwma, duty);
+    }
+
     int _ain1;
     int _ain2;
     int _pwma;
     int _stby;
     int _lastSpeed;
+    int _pwm;
 };
 
 #endif
